@@ -16,6 +16,8 @@
   .toolbar { display: flex; gap: 8px; margin-bottom: 16px; }
   input { flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 10px 12px; font-size: 0.95rem; }
   input:focus { outline: none; border-color: var(--accent); }
+  button { background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 10px 16px; font-size: 0.95rem; cursor: pointer; white-space: nowrap; }
+  button:hover { border-color: var(--accent); color: var(--accent); }
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
   .card h2 { font-size: 1.05rem; margin: 0 0 4px; }
   .card h2 a { color: var(--text); text-decoration: none; }
@@ -41,6 +43,7 @@
   <p class="sub" id="summary"></p>
   <div class="toolbar">
     <input id="q" type="search" placeholder="Filter by title, company, or location…" autocomplete="off">
+    <button id="rescan" title="Run a fresh scan now (opens GitHub Actions — hit 'Run workflow')">↻ Rescan</button>
   </div>
   <div id="list"></div>
   <footer>
@@ -50,6 +53,7 @@
 </div>
 <script>
 let all = [];
+const WORKFLOW_URL = 'https://github.com/Isaacred718/av-job-watcher/actions/workflows/watch.yml';
 async function load() {
   const list = document.getElementById('list');
   try {
@@ -61,7 +65,7 @@ async function load() {
     document.getElementById('updated').textContent = 'Last scan: ' + d.toLocaleString();
     document.getElementById('summary').textContent =
       all.length + (all.length === 1 ? ' live match' : ' live matches') + ' across watched boards.';
-    render('');
+    render(document.getElementById('q').value);
   } catch (e) {
     list.innerHTML = '<div class="err">No scan data yet — the first scheduled run will populate this page.</div>';
   }
@@ -91,7 +95,12 @@ function render(q) {
 }
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 document.getElementById('q').addEventListener('input', e => render(e.target.value));
+document.getElementById('rescan').addEventListener('click', () => {
+  window.open(WORKFLOW_URL, '_blank', 'noopener');
+});
 load();
+// Pick up fresh scan results on their own every 2 minutes.
+setInterval(load, 120000);
 </script>
 </body>
 </html>
