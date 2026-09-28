@@ -1,6 +1,6 @@
 # AV Job Watcher
 
-Watches the public job boards (Greenhouse + Lever APIs) of NYC-area AV, production,
+Watches the public job boards (Greenhouse, Lever, and Ashby APIs) of NYC-area AV, production,
 hospitality, and live-events companies for A1 / audio / live-event engineering roles,
 and pings me when new ones post.
 
@@ -25,9 +25,9 @@ Edit `companies.json`:
 { "name": "Company Name", "platform": "greenhouse", "board": "board-token" }
 ```
 
-- `platform` is `greenhouse` or `lever`.
+- `platform` is `greenhouse`, `lever`, or `ashby`.
 - `board` is the token in the company's public job-board URL:
-  `job-boards.greenhouse.io/<board>` or `jobs.lever.co/<board>`.
+  `job-boards.greenhouse.io/<board>`, `jobs.lever.co/<board>`, or `jobs.ashbyhq.com/<board>`.
 
 No code changes needed — the next scheduled run picks it up.
 

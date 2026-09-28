@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""AV Job Watcher — polls Greenhouse and Lever job boards for A1 / audio /
-live-event engineering roles in the NYC metro area.
+"""AV Job Watcher — polls Greenhouse, Lever, and Ashby job boards for A1 /
+audio / live-event engineering roles in the NYC metro area.
 
 Reads companies.json, fetches each board, filters by title keywords and
 location, then diffs against seen.json. Current matches go to matches.json
@@ -42,6 +42,7 @@ LOCATION_RE = re.compile(
 
 GH_API = "https://boards-api.greenhouse.io/v1/boards/{board}/jobs"
 LEVER_API = "https://api.lever.co/v0/postings/{board}?mode=json"
+ASHBY_API = "https://api.ashbyhq.com/posting-api/job-board/{board}"
 
 
 def fetch_json(url, timeout=25):
@@ -93,6 +94,34 @@ def fetch_lever(board):
                 "location": loc,
                 "url": j.get("hostedUrl") or j.get("applyUrl", ""),
                 "description": j.get("description") or j.get("descriptionHtml") or "",
+            }
+        )
+    return jobs
+
+
+def fetch_ashby(board):
+    data = fetch_json(ASHBY_API.format(board=board))
+    if not data:
+        return []
+    jobs = []
+    for j in data.get("jobs", []):
+        loc = j.get("location") or ""
+        for extra in j.get("secondaryLocations") or []:
+            name = extra.get("location") if isinstance(extra, dict) else extra
+            if name and name not in loc:
+                loc = f"{loc}; {name}" if loc else name
+        jobs.append(
+            {
+                "key": f"ab:{board}:{j.get('id')}",
+                "title": j.get("title", ""),
+                "company_board": board,
+                "location": loc,
+                "url": j.get("jobUrl", ""),
+                "description": j.get("descriptionHtml")
+                or j.get("descriptionPlain")
+                or "",
+                # Ashby often publishes a comp summary separately.
+                "pay_hint": j.get("compensationTierSummary") or "",
             }
         )
     return jobs
@@ -187,12 +216,14 @@ def main():
             all_jobs.extend(fetch_greenhouse(board))
         elif platform == "lever":
             all_jobs.extend(fetch_lever(board))
+        elif platform == "ashby":
+            all_jobs.extend(fetch_ashby(board))
         else:
             print(f"  unknown platform {platform}", file=sys.stderr)
 
     now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
     matches, new_matches = [], []
-    platform_for_prefix = {"gh": "greenhouse", "lv": "lever"}
+    platform_for_prefix = {"gh": "greenhouse", "lv": "lever", "ab": "ashby"}
     for job in all_jobs:
         if not is_match(job):
             continue
@@ -204,12 +235,13 @@ def main():
         )
         job["scraped_at"] = now
         # Pay lives in the full posting description; fetch it for each match.
-        pay = None
+        # Ashby boards sometimes carry a comp summary on the listing itself.
+        pay = job.pop("pay_hint", None) or None
         if prefix == "gh":
             job_id = rest.split(":")[1]
-            pay = extract_pay(fetch_greenhouse_detail(board, job_id))
+            pay = pay or extract_pay(fetch_greenhouse_detail(board, job_id))
         elif job.get("description"):
-            pay = extract_pay(job["description"])
+            pay = pay or extract_pay(job["description"])
         job["pay"] = pay
         if job["key"] not in seen:
             job["first_seen"] = now
