@@ -1,5 +1,5 @@
 {
-  "scraped_at": "2026-09-28T03:39:34+00:00",
+  "scraped_at": "2026-09-28T03:57:09+00:00",
   "count": 4,
   "matches": [
     {
@@ -8,8 +8,9 @@
       "company_board": "convene",
       "location": "New York, NY",
       "url": "https://job-boards.greenhouse.io/convene/jobs/8180337",
-      "company": "convene",
-      "scraped_at": "2026-09-28T03:39:34+00:00",
+      "company": "Convene Hospitality Group",
+      "scraped_at": "2026-09-28T03:57:09+00:00",
+      "pay": "$55/hour with 10 hour minimum guarantee per shift ($550 day rate minimum)",
       "first_seen": "2026-09-28T03:35:06+00:00"
     },
     {
@@ -18,8 +19,9 @@
       "company_board": "convene",
       "location": "New York, NY",
       "url": "https://job-boards.greenhouse.io/convene/jobs/8187134",
-      "company": "convene",
-      "scraped_at": "2026-09-28T03:39:34+00:00",
+      "company": "Convene Hospitality Group",
+      "scraped_at": "2026-09-28T03:57:09+00:00",
+      "pay": "$80,000 - $90,000",
       "first_seen": "2026-09-28T03:35:06+00:00"
     },
     {
@@ -28,8 +30,9 @@
       "company_board": "convene",
       "location": "New York, NY",
       "url": "https://job-boards.greenhouse.io/convene/jobs/8180353",
-      "company": "convene",
-      "scraped_at": "2026-09-28T03:39:34+00:00",
+      "company": "Convene Hospitality Group",
+      "scraped_at": "2026-09-28T03:57:09+00:00",
+      "pay": "$55/hour with 10 hour minimum guarantee per shift ($550 day rate minimum)",
       "first_seen": "2026-09-28T03:35:06+00:00"
     },
     {
@@ -38,8 +41,9 @@
       "company_board": "feverup",
       "location": "New York",
       "url": "https://job-boards.eu.greenhouse.io/feverup/jobs/4948107101",
-      "company": "feverup",
-      "scraped_at": "2026-09-28T03:39:34+00:00",
+      "company": "Fever (live events)",
+      "scraped_at": "2026-09-28T03:57:09+00:00",
+      "pay": "$500/day",
       "first_seen": "2026-09-28T03:35:06+00:00"
     }
   ]

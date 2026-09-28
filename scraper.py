@@ -10,6 +10,7 @@ Action opens one issue per new match).
 Stdlib only — no dependencies to install.
 """
 import datetime
+import html
 import json
 import re
 import sys
@@ -91,9 +92,72 @@ def fetch_lever(board):
                 "company_board": board,
                 "location": loc,
                 "url": j.get("hostedUrl") or j.get("applyUrl", ""),
+                "description": j.get("description") or j.get("descriptionHtml") or "",
             }
         )
     return jobs
+
+
+def fetch_greenhouse_detail(board, job_id):
+    """Full posting (with description HTML) for one Greenhouse job."""
+    data = fetch_json(
+        f"https://boards-api.greenhouse.io/v1/boards/{board}/jobs/{job_id}"
+        "?questions=true"
+    )
+    return (data or {}).get("content", "")
+
+
+def extract_pay(content_html):
+    """Pull a pay snippet like '$55/hour ...' or '$80,000 - $90,000'
+    from a job description. Returns None when no pay is listed."""
+    if not content_html:
+        return None
+    # Unescape repeatedly: some boards double-encode entities (&amp;nbsp;)
+    text, prev = content_html, None
+    while text != prev:
+        prev, text = text, html.unescape(text)
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = re.sub(r"\s+", " ", text)
+
+    def clean(val):
+        # Cut off when the next labeled field begins ("... Location: NYC")
+        val = re.split(r"\s+[A-Z][A-Za-z]*\s*:", val, maxsplit=1)[0]
+        return val.strip(" -\u2013\u2014")[:160].strip()
+
+    # "Salary Min: $80,000  Salary Max: $90,000" style
+    m = re.search(
+        r"(?i)salary\s*min\s*:\s*(\$[\d,]+(?:\.\d{2})?)"
+        r"\s*salary\s*max\s*:\s*(\$[\d,]+(?:\.\d{2})?)",
+        text,
+    )
+    if m:
+        return f"{m.group(1)} - {m.group(2)}"
+    # Labeled pay lines: Rate: / Salary: / Pay: / Compensation:
+    m = re.search(
+        r"(?i)\b(pay\s*rate|hourly\s*rate|rate|salary|compensation|pay\s*range|pay)"
+        r"\s*:\s*([^.]{3,160})",
+        text,
+    )
+    if m:
+        val = clean(m.group(2))
+        if "$" in val or re.search(r"\d", val):
+            return val
+    # Fallback: $ amount (with optional range) + time unit, or a bare $ range
+    m = re.search(
+        r"\$[\d,]+(?:\.\d{2})?(?:\s*[-\u2013\u2014]\s*\$?[\d,]+(?:\.\d{2})?)?\+?"
+        r"\s*(?:/\s*|per\s+)?(hour|hr|year|yr|week|day|month|annual(?:ly)?)",
+        text,
+        re.I,
+    )
+    if m:
+        return m.group(0).strip()
+    m = re.search(
+        r"\$[\d,]+(?:\.\d{2})?\s*[-\u2013\u2014]\s*\$[\d,]+(?:\.\d{2})?",
+        text,
+    )
+    if m:
+        return m.group(0).strip()
+    return None
 
 
 def is_match(job):
@@ -128,13 +192,25 @@ def main():
 
     now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
     matches, new_matches = [], []
+    platform_for_prefix = {"gh": "greenhouse", "lv": "lever"}
     for job in all_jobs:
         if not is_match(job):
             continue
+        prefix, _, rest = job["key"].partition(":")
+        board = rest.split(":")[0]
+        platform = platform_for_prefix.get(prefix, prefix)
         job["company"] = board_names.get(
-            f"{job['key'].split(':')[0]}:{job['company_board']}", job["company_board"]
+            f"{platform}:{board}", job["company_board"]
         )
         job["scraped_at"] = now
+        # Pay lives in the full posting description; fetch it for each match.
+        pay = None
+        if prefix == "gh":
+            job_id = rest.split(":")[1]
+            pay = extract_pay(fetch_greenhouse_detail(board, job_id))
+        elif job.get("description"):
+            pay = extract_pay(job["description"])
+        job["pay"] = pay
         if job["key"] not in seen:
             job["first_seen"] = now
             new_matches.append(job)

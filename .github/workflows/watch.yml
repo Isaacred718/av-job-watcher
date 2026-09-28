@@ -38,10 +38,11 @@ jobs:
             location=$(echo "$job" | jq -r '.location')
             url=$(echo "$job" | jq -r '.url')
             first_seen=$(echo "$job" | jq -r '.first_seen')
+            pay=$(echo "$job" | jq -r '.pay // "not listed"')
             gh issue create \
               --label new-match \
               --title "New match: $title - $company" \
-              --body "$(printf '## %s\n**%s** - %s\n\nApply: %s\n\nFirst seen: %s\n\n---\nOpened automatically by the AV job watcher. Close the issue once applied or ruled out.' "$title" "$company" "$location" "$url" "$first_seen")"
+              --body "$(printf '## %s\n**%s** - %s\n\n**Pay:** %s\n\nApply: %s\n\nFirst seen: %s\n\n---\nOpened automatically by the AV job watcher. Close the issue once applied or ruled out.' "$title" "$company" "$location" "$pay" "$url" "$first_seen")"
           done
 
       - name: Commit updated state
