@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AV Job Watcher</title>
+<style>
+  :root { --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #e6edf3; --muted: #8b949e; --accent: #d4a017; --green: #3fb950; }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; margin: 0; padding: 24px 16px 64px; }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  header { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+  h1 { font-size: 1.6rem; margin: 0; }
+  h1 .dot { color: var(--accent); }
+  .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; }
+  .toolbar { display: flex; gap: 8px; margin-bottom: 16px; }
+  input { flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 10px 12px; font-size: 0.95rem; }
+  input:focus { outline: none; border-color: var(--accent); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .card h2 { font-size: 1.05rem; margin: 0 0 4px; }
+  .card h2 a { color: var(--text); text-decoration: none; }
+  .card h2 a:hover { color: var(--accent); }
+  .meta { color: var(--muted); font-size: 0.85rem; margin-bottom: 10px; }
+  .badge { display: inline-block; font-size: 0.72rem; background: #0e2a14; color: var(--green); border: 1px solid #1c4d28; border-radius: 20px; padding: 2px 10px; margin-right: 6px; }
+  .apply { display: inline-block; margin-top: 4px; color: var(--accent); font-size: 0.9rem; text-decoration: none; font-weight: 600; }
+  .apply:hover { text-decoration: underline; }
+  .empty { color: var(--muted); text-align: center; padding: 48px 0; }
+  .err { color: #f85149; text-align: center; padding: 48px 0; }
+  footer { color: var(--muted); font-size: 0.8rem; text-align: center; margin-top: 32px; }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="dot">●</span> AV Job Watcher</h1>
+    <span class="sub" id="updated"></span>
+  </header>
+  <p class="sub" id="summary"></p>
+  <div class="toolbar">
+    <input id="q" type="search" placeholder="Filter by title, company, or location…" autocomplete="off">
+  </div>
+  <div id="list"></div>
+  <footer>
+    Scraped twice daily from company job boards (Greenhouse + Lever) ·
+    <a href="https://github.com/Isaacred718/av-job-watcher">source</a>
+  </footer>
+</div>
+<script>
+let all = [];
+async function load() {
+  const list = document.getElementById('list');
+  try {
+    const res = await fetch('matches.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('no data yet');
+    const data = await res.json();
+    all = data.matches || [];
+    const d = new Date(data.scraped_at);
+    document.getElementById('updated').textContent = 'Last scan: ' + d.toLocaleString();
+    document.getElementById('summary').textContent =
+      all.length + (all.length === 1 ? ' live match' : ' live matches') + ' across watched boards.';
+    render('');
+  } catch (e) {
+    list.innerHTML = '<div class="err">No scan data yet — the first scheduled run will populate this page.</div>';
+  }
+}
+function render(q) {
+  const list = document.getElementById('list');
+  q = q.trim().toLowerCase();
+  const rows = all.filter(m =>
+    !q || (m.title + ' ' + m.company + ' ' + m.location).toLowerCase().includes(q));
+  if (!rows.length) {
+    list.innerHTML = '<div class="empty">' + (all.length ? 'No matches for that filter.' : 'No live matches right now. New postings will appear here.') + '</div>';
+    return;
+  }
+  list.innerHTML = rows.map(m => {
+    const seen = new Date(m.first_seen).toLocaleDateString();
+    return `<div class="card">
+      <h2><a href="${m.url}" target="_blank" rel="noopener">${escapeHtml(m.title)}</a></h2>
+      <div class="meta">${escapeHtml(m.company)} · ${escapeHtml(m.location)} · first seen ${seen}</div>
+      <span class="badge">live</span>
+      <a class="apply" href="${m.url}" target="_blank" rel="noopener">View / apply →</a>
+    </div>`;
+  }).join('');
+}
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+document.getElementById('q').addEventListener('input', e => render(e.target.value));
+load();
+</script>
+</body>
+</html>

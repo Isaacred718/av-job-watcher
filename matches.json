@@ -1,0 +1,46 @@
+{
+  "scraped_at": "2026-09-28T03:35:06+00:00",
+  "count": 4,
+  "matches": [
+    {
+      "key": "gh:convene:8180337",
+      "title": "A1 Audio Engineer, Live Events (part-time)",
+      "company_board": "convene",
+      "location": "New York, NY",
+      "url": "https://job-boards.greenhouse.io/convene/jobs/8180337",
+      "company": "convene",
+      "scraped_at": "2026-09-28T03:35:06+00:00",
+      "first_seen": "2026-09-28T03:35:06+00:00"
+    },
+    {
+      "key": "gh:convene:8187134",
+      "title": "Audio Visual Supervisor, Live Events",
+      "company_board": "convene",
+      "location": "New York, NY",
+      "url": "https://job-boards.greenhouse.io/convene/jobs/8187134",
+      "company": "convene",
+      "scraped_at": "2026-09-28T03:35:06+00:00",
+      "first_seen": "2026-09-28T03:35:06+00:00"
+    },
+    {
+      "key": "gh:convene:8180353",
+      "title": "L1 Lighting Engineer, Live Events (part-time)",
+      "company_board": "convene",
+      "location": "New York, NY",
+      "url": "https://job-boards.greenhouse.io/convene/jobs/8180353",
+      "company": "convene",
+      "scraped_at": "2026-09-28T03:35:06+00:00",
+      "first_seen": "2026-09-28T03:35:06+00:00"
+    },
+    {
+      "key": "gh:feverup:4948107101",
+      "title": "Audio Technician (Event Run Position)",
+      "company_board": "feverup",
+      "location": "New York",
+      "url": "https://job-boards.eu.greenhouse.io/feverup/jobs/4948107101",
+      "company": "feverup",
+      "scraped_at": "2026-09-28T03:35:06+00:00",
+      "first_seen": "2026-09-28T03:35:06+00:00"
+    }
+  ]
+}

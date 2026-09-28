@@ -1,0 +1,60 @@
+name: AV job watch
+
+on:
+  schedule:
+    # ~8:07 AM and ~6:07 PM Eastern (Actions cron is UTC; EDT = UTC-4)
+    - cron: "7 12 * * *"
+    - cron: "7 22 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Scrape job boards
+        run: python3 scraper.py
+
+      - name: Open an issue for each new match
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          count=$(jq 'length' new_matches.json)
+          echo "New matches: $count"
+          if [ "$count" -eq 0 ]; then exit 0; fi
+          gh label create new-match --color 0E8A16 --description "New job match" 2>/dev/null || true
+          jq -c '.[]' new_matches.json | while read -r job; do
+            title=$(echo "$job" | jq -r '.title')
+            company=$(echo "$job" | jq -r '.company')
+            location=$(echo "$job" | jq -r '.location')
+            url=$(echo "$job" | jq -r '.url')
+            first_seen=$(echo "$job" | jq -r '.first_seen')
+            gh issue create \
+              --label new-match \
+              --title "New match: $title — $company" \
+              --body "## $title
+**$company** — $location
+
+Apply: $url
+
+First seen: $first_seen
+
+---
+Opened automatically by the AV job watcher. Close this issue when you've applied or ruled it out."
+          done
+
+      - name: Commit updated state
+        run: |
+          git config user.name "av-job-watcher"
+          git config user.email "av-job-watcher@users.noreply.github.com"
+          git add seen.json matches.json
+          git diff --cached --quiet || (git commit -m "Update job matches" && git push)
