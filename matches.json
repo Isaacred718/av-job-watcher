@@ -1,5 +1,5 @@
 {
-  "scraped_at": "2026-09-29T10:36:45+00:00",
+  "scraped_at": "2026-09-29T18:03:02+00:00",
   "count": 6,
   "matches": [
     {
@@ -9,7 +9,7 @@
       "location": "San Francisco, CA | New York City, NY",
       "url": "https://job-boards.greenhouse.io/anthropic/jobs/5385588008",
       "company": "Anthropic",
-      "scraped_at": "2026-09-29T10:36:45+00:00",
+      "scraped_at": "2026-09-29T18:03:02+00:00",
       "pay": "$285,000 \u2014 $325,000 USD Logistics Minimum education: Bachelor\u2019s degree or an equivalent combination of education, training, and/or experience Required field of",
       "first_seen": "2026-09-28T04:32:03+00:00"
     },
@@ -20,7 +20,7 @@
       "location": "New York City, NY",
       "url": "https://job-boards.greenhouse.io/anthropic/jobs/5383710008",
       "company": "Anthropic",
-      "scraped_at": "2026-09-29T10:36:45+00:00",
+      "scraped_at": "2026-09-29T18:03:02+00:00",
       "pay": "$230,000 \u2014 $285,000 USD Logistics Minimum education: Bachelor\u2019s degree or an equivalent combination of education, training, and/or experience Required field of",
       "first_seen": "2026-09-28T04:31:45+00:00"
     },
@@ -31,7 +31,7 @@
       "location": "New York, NY",
       "url": "https://job-boards.greenhouse.io/convene/jobs/8180337",
       "company": "Convene Hospitality Group",
-      "scraped_at": "2026-09-29T10:36:45+00:00",
+      "scraped_at": "2026-09-29T18:03:02+00:00",
       "pay": "$55/hour with 10 hour minimum guarantee per shift ($550 day rate minimum)",
       "first_seen": "2026-09-28T03:35:06+00:00"
     },
@@ -42,7 +42,7 @@
       "location": "New York, NY",
       "url": "https://job-boards.greenhouse.io/convene/jobs/8187134",
       "company": "Convene Hospitality Group",
-      "scraped_at": "2026-09-29T10:36:45+00:00",
+      "scraped_at": "2026-09-29T18:03:02+00:00",
       "pay": "$80,000 - $90,000",
       "first_seen": "2026-09-28T03:35:06+00:00"
     },
@@ -53,7 +53,7 @@
       "location": "New York, NY",
       "url": "https://job-boards.greenhouse.io/convene/jobs/8180353",
       "company": "Convene Hospitality Group",
-      "scraped_at": "2026-09-29T10:36:45+00:00",
+      "scraped_at": "2026-09-29T18:03:02+00:00",
       "pay": "$55/hour with 10 hour minimum guarantee per shift ($550 day rate minimum)",
       "first_seen": "2026-09-28T03:35:06+00:00"
     },
@@ -64,7 +64,7 @@
       "location": "New York",
       "url": "https://job-boards.eu.greenhouse.io/feverup/jobs/4948107101",
       "company": "Fever (live events)",
-      "scraped_at": "2026-09-29T10:36:45+00:00",
+      "scraped_at": "2026-09-29T18:03:02+00:00",
       "pay": "$500/day",
       "first_seen": "2026-09-28T03:35:06+00:00"
     }
